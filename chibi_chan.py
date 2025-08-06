@@ -18,7 +18,8 @@ def health():
 
 # Discord bot code
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
+intents.message_content = True
+bot = commands.Bot(command_prefix=None, intents=intents)
 
 rps_choices = ["rock", "paper", "scissors"]
 
@@ -79,21 +80,26 @@ class RPSView(View):
         await self.handle_choice(interaction, interaction.user, "scissors")
 
 
-@bot.command()
-async def rps(ctx, opponent: discord.Member):
+@bot.tree.command(name="rps", description="Challenge someone to a Rock-Paper-Scissors duel")
+async def rps(interaction: discord.Interaction, opponent: discord.Member):
     """Start an RPS duel"""
-    if opponent == ctx.author:
-        await ctx.send("You can't challenge yourself!")
+    if opponent == interaction.user:
+        await interaction.response.send_message("You can't challenge yourself!", ephemeral=True)
         return
 
-    await ctx.send(
-        f"{ctx.author.mention} challenged {opponent.mention} to a Rock-Paper-Scissors duel!",
-        view=RPSView(ctx.author, opponent)
+    await interaction.response.send_message(
+        f"{interaction.user.mention} challenged {opponent.mention} to a Rock-Paper-Scissors duel!",
+        view=RPSView(interaction.user, opponent)
     )
 
 @bot.event
 async def on_ready():
     print(f'{bot.user} has logged in!')
+    try:
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} command(s)")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
 
 def run_bot():
     """Run the Discord bot"""
