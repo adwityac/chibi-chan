@@ -95,6 +95,13 @@ async def rps(interaction: discord.Interaction, opponent: discord.Member):
 @bot.event
 async def on_ready():
     print(f'{bot.user} has logged in!')
+    
+    # Set cute bot status
+    await bot.change_presence(
+        status=discord.Status.online,
+        activity=discord.Game(name="🪨📄✂️ with friends! | /rps")
+    )
+    
     try:
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} command(s)")
