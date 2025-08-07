@@ -1,0 +1,4 @@
+- name: Run ping script
+  run: |
+    pip install requests
+    python ping.py
